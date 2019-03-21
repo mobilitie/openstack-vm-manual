@@ -1,0 +1,29 @@
+#cloud-config
+manage_etc_hosts: false
+password: pass123
+chpasswd: { expire: False }
+ssh_pwauth: True
+manage_resolv_conf: false
+fqdn: kube-build.cluster.local
+resolv_conf:
+  nameservers: [10.0.1.120]
+ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDEvo2G4zMWp4qfkRJUTeu1lRI4GQROKtDS9Q1l7Vka8e3XOZQ64CoPLRAiAF3Gr89InXwSv3y3I82jC2DMtesTv1F6H6nXOiEVnbRAdPsDOUvzYcxrm50Pu6ttaQxygv8C+/18SIQEUn/YwtskeP4FxzjzlEVTSaUWIhQkeAERStzVEfmp2OjrMmjKIGRqH22Vlw9eAsWqGeZb9nM5xZ+ZaX3lFpDjGA8dNeC/ToWIQSHP63spis2eZF3J9pVVFLbKspamunXyP03PTk59GuWcisZR3IfScqRk1fXZ8ER7MBKdy+WEguWvFxbT6sefEAB+d5tMWHo0y4AhgITpDs0n root@lab-mgmt
+package_upgrade: true
+packages:
+  - python3
+  - python
+  - python-pip
+  - tuned
+  - linux-image-virtual
+  - linux-image-extra-virtual
+  - python3-pip
+  - apt-transport-https
+  - ca-certificates
+  - software-properties-common
+runcmd:
+  - echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.conf
+  - echo 'net.ipv6.conf.all.forwarding=1' >> /etc/sysctl.conf
+power_state:
+  delay: now
+  mode: reboot

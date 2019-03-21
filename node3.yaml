@@ -1,0 +1,42 @@
+#cloud-config
+manage_etc_hosts: false
+password: pass123
+chpasswd: { expire: False }
+ssh_pwauth: True
+manage_resolv_conf: true
+fqdn: node3.cluster.local
+ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDSwsG/uNwL+3kBA16k+6CmWVxiLhOoEY1u0pH9BkX6R4kH6xDNXa6HiwElmxJGzO/s2SJJuCom25uEJP29ArG3USKe1g/iRTGND6FjaZe8UQVxmexAXsfpAZKXQOOkNdDDdrvL/msDhwtThkDz0vb18DZ9KKd/KG1q8hxjgvPq2Uee/K+7Ww7ad6/Ex/snECBQOkqN7KcqyJbGGN9fnUtxVXfuEA0kFCKt02yJ3heVj3WDGqASyYI+XRA3cw3ZoulnFyQphUZWsdUjdRY7Nv42SwmE3glxRiq9Fd9j6QWG0ydVUK9BytF88NJ7WVxjZ0FUjjd6YCus248hBw4yCu5h ubuntu@kube-build
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDEvo2G4zMWp4qfkRJUTeu1lRI4GQROKtDS9Q1l7Vka8e3XOZQ64CoPLRAiAF3Gr89InXwSv3y3I82jC2DMtesTv1F6H6nXOiEVnbRAdPsDOUvzYcxrm50Pu6ttaQxygv8C+/18SIQEUn/YwtskeP4FxzjzlEVTSaUWIhQkeAERStzVEfmp2OjrMmjKIGRqH22Vlw9eAsWqGeZb9nM5xZ+ZaX3lFpDjGA8dNeC/ToWIQSHP63spis2eZF3J9pVVFLbKspamunXyP03PTk59GuWcisZR3IfScqRk1fXZ8ER7MBKdy+WEguWvFxbT6sefEAB+d5tMWHo0y4AhgITpDs0n root@lab-mgmt
+package_upgrade: true
+packages:
+  - python3
+  - python
+  - python-pip
+  - tuned
+  - linux-image-virtual
+  - linux-image-extra-virtual
+  - python3-pip
+  - apt-transport-https
+  - ca-certificates
+  - software-properties-common
+network:
+  version: 2
+  ethernets:
+    ens3:
+      match:
+        name: ens3
+      mtu: 9000
+      addresses:
+        - 192.168.21.33/24
+      gateway4: 192.168.21.1
+      nameservers:
+        addresses: [10.0.1.120]
+runcmd:
+  - echo 'GRUB_CMDLINE_LINUX_DEFAULT="console=tty1 console=ttyS0 default_hugepagesz=2M hugepagesz=2M hugepages=2048 intel_iommu=on iommu=pt"' >> /etc/default/grub.d/50-cloudimg-settings.cfg
+  - [update-grub]
+  - echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.conf
+  - echo 'net.ipv6.conf.all.forwarding=1' >> /etc/sysctl.conf
+power_state:
+  delay: now
+  mode: reboot
